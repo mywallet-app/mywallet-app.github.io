@@ -1,5 +1,5 @@
 // My Wallet offline cache. Bump VERSION whenever index.html changes.
-const VERSION = "mywallet-v2";
+const VERSION = "mywallet-v3";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
@@ -14,6 +14,8 @@ self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
+  // Never cache the visitor-count script, so counting always uses the current version.
+  if (url.hostname.endsWith("cloudflareinsights.com")) return;
   // Page itself: try the network first so updates arrive, fall back to the cached copy offline.
   if (req.mode === "navigate") {
     e.respondWith(fetch(req).then(res => {
